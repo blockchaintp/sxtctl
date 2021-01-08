@@ -65,7 +65,7 @@ func NewCmdRemoteAdd(out, errOut io.Writer) *cobra.Command {
 			}
 			name := args[0]
 
-			re := regexp.MustCompile(`^\w+$`)
+			re := regexp.MustCompile(`^[\w-]+$`)
 			if !re.Match([]byte(name)) {
 				return fmt.Errorf("Remote name must be alphanumeric")
 			}
