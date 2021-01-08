@@ -52,7 +52,7 @@ func listDeployments(out, errOut io.Writer) error {
 		if err != nil {
 			return err
 		}
-		fmt.Printf(jsonString)
+		fmt.Printf("%s\n", jsonString)
 	}
 
 	return nil
