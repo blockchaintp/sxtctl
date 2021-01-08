@@ -45,16 +45,17 @@ Use "sxtctl [command] --help" for more information about a command.
 You can use `sxtctl` right out of the box by setting the following environment
 variables (useful if running in CI):
 
-* `SEXTANT_URL` - the http(s) URL of the remote sextant API server
-* `SEXTANT_TOKEN` - the access token for the remote sextant API server
+ * `SEXTANT_URL` - the http(s) URL of the remote sextant API server including the port if necessary
+ * `SEXTANT_TOKEN` - the access token for the remote sextant API server
 
 ## remotes
 
-To help manage multiple sextant api servers - sxtctl supports `remotes` which
-is will remember for next time.
+To help manage multiple sextant api servers - sxtctl supports `remotes` which it stores in a config file in much the same way that `kubectl` stores its cluster configs. This is normally stored in `~/.sextant` directory.
 
 If you do not provide `--url` or `SEXTANT_URL` (plus token) variables - sextant
 will use the currently active remote from your saved list.
+
+#### remote list
 
 To view your current remotes:
 
@@ -68,17 +69,23 @@ $ sxtctl remote list
 +------------+------------------+
 ```
 
+#### remote add
+
 To add a new remote:
 
 ```bash
 sxtctl remote add apples --url https://my.sextant.api.com --token XXXX
 ```
 
+#### remote remove
+
 To remove a remote:
 
 ```bash
 sxtctl remote remove apples
 ```
+
+#### remote use
 
 To switch to use a different remote by default:
 
@@ -87,6 +94,8 @@ sxtctl remote use apples
 ```
 
 ## clusters
+
+#### cluster list
 
 To view a list of clusters on the current remote:
 
@@ -108,11 +117,11 @@ sxtctl cluster list -o json
 
 ## deployments
 
-To view a list of deployments on a cluster, you must provide either the cluster
-id or name.
+#### deployment list
 
-This should be assigned to the `--cluster` command line argument or
-`SEXTANT_CLUSTER` env variable:
+To view a list of deployments on a cluster, you must provide either the cluster id or name.
+
+This should be assigned to the `--cluster` command line argument or using the `SEXTANT_CLUSTER` env variable:
 
 For example - in the output above - we have a cluster called `kind` with an id
 of `3`
@@ -139,31 +148,34 @@ CI):
 sxtctl deployment list --cluster 3 -o json
 ```
 
-## pause & restart deployments
+#### deployment undeploy
 
-If you want to "pause" a deployment (remove all containers but keep the
-persistent volumes):
+If you want to undeploy a provisioned deployment on a cluster (i.e. terminate all its pods but retain the state of the underlying blockchain) then in addition to supplying details of cluster as above you need to provide either the id or the name of the deployment using the `--deployment` command line argument or using the `SEXTANT_DEPLOYMENT` env variable:
+:
 
 ```bash
 sxtctl deployment undeploy --cluster 3 --deployment 15
 ```
 
-Then - later, if you want to reactivate a dedployment (i.e. reinstantiate all
-containers)
+If you list the deployments you will see that the status of the deployment is _deleted_ once it is undeployed.
+
+_NOTE_ with DAML on Besu you need to ensure that persistence is enabled.
+
+#### deployment redeploy
+
+If you want to redeploy a deleted deployment i.e. reprovision all its pods:
 
 ```bash
 sxtctl deployment redeploy --cluster 3 --deployment 15
 ```
 
-## examples
+If you list the deployments you will see that the status of the deployment is _provisioned_ once it is redeployed.
 
-### scale to zero nodes
+### examples
 
-In the following example - we configure everything via env variables (typical
-for a CI environment).
+#### scale cluster to zero worker nodes
 
-We can then run our two functions in order to pause and re-activate a
-deployment.
+In the following example we configure everything via env variables (typical for a CI environment) and define functions that suspend and resume a deployment respectively.
 
 ```bash
 export SEXTANT_URL=https://my.sextant.com
@@ -171,11 +183,17 @@ export SEXTANT_TOKEN=XXX
 export SEXTANT_CLUSTER=cluster-name
 export SEXTANT_DEPLOYMENT=deployment-name
 
-function pause-deployment() {
+function suspend-deployment() {
   sxtctl deployment undeploy
 }
 
-function restart-deployment() {
+function resume-deployment() {
   sxtctl deployment redeploy
 }
 ```
+
+These functions can be integrated into automated workflows that:
+* suspend a provisioned deployment; confirm that all the pods associated with the deployment have been terminated then scale back the cluster to zero worker nodes
+* scale up cluster to the appropriate number of worker nodes; confirm that these are ready then resume a deleted deployment
+
+_NOTE_ that the K8s namespace for a deployment is provided if you list deployments using JSON format.
