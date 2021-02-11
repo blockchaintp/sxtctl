@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## Unreleased
+
+
 ## v0.4
 
 * fix(sxtctl): build binaries for all platforms [view commit](http://github.com/https://github.com/catenasys/sxtctl/commit/fb62df16896c569c0bd6b7333bb78c04024af2f3)
