@@ -1,3 +1,5 @@
+ISOLATION_ID ?= local
+
 .PHONY: build
-all:
-	bash scripts/build.sh
+build:
+	docker build -t sxtctl:$(ISOLATION_ID) .
