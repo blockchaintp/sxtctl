@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+
+## v0.5.1
+
 * delete github workflow [view commit](https://github.com/catenasys/sxtctl/commit/6d9683eabc21f3e05a43bd78c8a47a13c4d205a2)
 * makefile and Jenkinsfile for build [view commit](https://github.com/catenasys/sxtctl/commit/8926131f3809b5bcc99f2db17e57bde6f2926f01)
 * Dockerfile that builds all arch/os then adds binaries and makes linux/amd64 the entrypoint [view commit](https://github.com/catenasys/sxtctl/commit/c3e93622c9809580b64b57e220e0c69b962cd159)
