@@ -1,8 +1,5 @@
 # CHANGELOG
 
-## Unreleased
-
-
 ## v0.5.1
 
 * delete github workflow [view commit](https://github.com/catenasys/sxtctl/commit/6d9683eabc21f3e05a43bd78c8a47a13c4d205a2)
