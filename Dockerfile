@@ -1,10 +1,12 @@
-FROM golang:1.13-alpine as builder
+FROM golang:1.16-alpine as builder
 RUN apk update && \
     apk upgrade && \
-    apk add bash
+    apk add \
+      bash \
+      gcc
 COPY . /tmp/catenasys/sxtctl
 WORKDIR /tmp/catenasys/sxtctl
-RUN bash ./scripts/build.sh
+RUN bash ./scripts/build
 
 FROM scratch
 WORKDIR /
