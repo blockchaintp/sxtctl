@@ -49,36 +49,60 @@ pipeline {
 
     stage('Build') {
       steps {
-        sh "make build"
+        sh "make clean build"
       }
     }
 
-    // Test
+    stage('Package') {
+      steps {
+        sh "make package"
+      }
+    }
 
-    // Publish
+    stage("Analyze") {
+      steps {
+        withCredentials([string(credentialsId: 'fossa.full.token', variable: 'FOSSA_API_KEY')]) {
+          sh '''
+            make analyze
+          '''
+        }
+      }
+    }
 
-    stage('Create Archives') {
+    stage('Test') {
+      steps {
+        sh "make test"
+      }
+    }
+
+    stage('Create Archive') {
+      steps {
+        sh "make archive"
+        archiveArtifacts 'build/*.tgz, build/*.zip'
+      }
+    }
+
+    stage("Publish") {
+      when {
+        expression { env.BRANCH_NAME == "master" }
+      }
       steps {
         sh '''
-            REPO=$(git remote show -n origin | grep Fetch | awk -F'[/.]' '{print $6}')
-            VERSION=`git describe --dirty`
-            git archive HEAD --format=zip -9 --output=$REPO-$VERSION.zip
-            git archive HEAD --format=tgz -9 --output=$REPO-$VERSION.tgz
+          make clean publish
         '''
       }
     }
-
   }
 
   post {
       success {
-          archiveArtifacts '*.tgz, *.zip'
+        echo "Successfully completed"
       }
       aborted {
-          error "Aborted, exiting now"
+        error "Aborted, exiting now"
       }
       failure {
-          error "Failed, exiting now"
+        error "Failed, exiting now"
       }
   }
 }

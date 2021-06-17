@@ -1,0 +1,6 @@
+FROM golang:1.16-alpine as builder
+RUN apk update && \
+    apk upgrade && \
+    apk add \
+      bash \
+      gcc
