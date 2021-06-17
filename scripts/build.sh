@@ -9,7 +9,7 @@ export GO111MODULE=on
 rm -rf $TARGETDIR
 mkdir -p $TARGETDIR
 for GOOS in darwin linux windows; do
-  for GOARCH in 386 amd64; do
+  for GOARCH in 386 amd64 arm64; do
     export GOOS GOARCH
     echo "building sxtctl-$GOOS-$GOARCH"
     go build \

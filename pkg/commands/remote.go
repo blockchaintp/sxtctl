@@ -6,6 +6,7 @@ import (
 	"os"
 	"regexp"
 
+	"github.com/asaskevich/govalidator"
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
 )
@@ -63,6 +64,11 @@ func NewCmdRemoteAdd(out, errOut io.Writer) *cobra.Command {
 			if AccessToken == "" {
 				return fmt.Errorf("Please provide a --token argument")
 			}
+
+			if !govalidator.IsURL(Url) {
+				return fmt.Errorf("'%s' is not a valid URL", Url)
+			}
+
 			name := args[0]
 
 			re := regexp.MustCompile(`^[\w-]+$`)

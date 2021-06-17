@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/asaskevich/govalidator"
 	"github.com/catenasys/sxtctl/pkg/http"
 	"github.com/catenasys/sxtctl/pkg/types"
 )
@@ -56,6 +57,16 @@ func expandFilePath(path string) (string, error) {
 	return filepath.Join(usr.HomeDir, path[1:]), nil
 }
 
+func validateCLIConfig(config *CLIConfig) error {
+	for _, remote := range config.Remotes {
+		if !govalidator.IsURL(remote.Url) {
+			return fmt.Errorf("Remote %s has an invalid Url '%s'", remote.Name, remote.Url)
+		}
+	}
+
+	return nil
+}
+
 func loadCLIConfig() (*CLIConfig, error) {
 	configPath, err := expandFilePath(AUTH_CONFIG_PATH)
 	if err != nil {
@@ -74,6 +85,12 @@ func loadCLIConfig() (*CLIConfig, error) {
 		err = json.Unmarshal(configData, &config)
 		if err != nil {
 			return nil, fmt.Errorf("Error parsing config file: %s\n%s\n", err, string(configData))
+		}
+
+		err = validateCLIConfig(config)
+
+		if err != nil {
+			return nil, err
 		}
 		return config, nil
 	} else if os.IsNotExist(err) {
