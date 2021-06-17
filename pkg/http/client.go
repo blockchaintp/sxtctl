@@ -92,7 +92,7 @@ func (handler *HttpApiHandler) Request(method string, path string, body interfac
 		bodyString := string(respBody)
 		err = json.Unmarshal(respBody, &result)
 		if err != nil {
-			log.Printf("Error decoding response '%s'", bodyString)
+			log.Printf("Error decoding response '%s'\n", bodyString)
 		}
 	}
 	return err

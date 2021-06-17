@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net/url"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -56,6 +57,33 @@ func expandFilePath(path string) (string, error) {
 	return filepath.Join(usr.HomeDir, path[1:]), nil
 }
 
+func validateRemoteUrl(checkurl string) error {
+	url, err := url.Parse(checkurl)
+
+	if err != nil {
+		return fmt.Errorf("Invalid Url '%s'", url)
+	}
+
+	//Schemeless urls cause errors further down
+	if url.Scheme == "" {
+		return fmt.Errorf("Url has no scheme '%s'", url)
+	}
+
+	return nil
+}
+
+func validateCLIConfig(config *CLIConfig) error {
+	for _, remote := range config.Remotes {
+		err := validateRemoteUrl(remote.Url)
+
+		if err != nil {
+			return fmt.Errorf("Remote %s has an invalid Url (%s)", remote.Name, err)
+		}
+	}
+
+	return nil
+}
+
 func loadCLIConfig() (*CLIConfig, error) {
 	configPath, err := expandFilePath(AUTH_CONFIG_PATH)
 	if err != nil {
@@ -74,6 +102,12 @@ func loadCLIConfig() (*CLIConfig, error) {
 		err = json.Unmarshal(configData, &config)
 		if err != nil {
 			return nil, fmt.Errorf("Error parsing config file: %s\n%s\n", err, string(configData))
+		}
+
+		err = validateCLIConfig(config)
+
+		if err != nil {
+			return nil, err
 		}
 		return config, nil
 	} else if os.IsNotExist(err) {

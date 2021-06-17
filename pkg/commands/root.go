@@ -14,11 +14,11 @@ var OutputFormat string
 
 func NewCmdRoot(out, errOut io.Writer) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:          "sextantctl",
+		Use:          "sxtctl",
 		Short:        "CLI client for sextant.",
 		SilenceUsage: true,
 		Long: `
-sextantctl
+sextctl		
 ==========
 
 Manage your sextant installation.`,

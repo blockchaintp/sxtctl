@@ -63,6 +63,12 @@ func NewCmdRemoteAdd(out, errOut io.Writer) *cobra.Command {
 			if AccessToken == "" {
 				return fmt.Errorf("Please provide a --token argument")
 			}
+
+			err := validateRemoteUrl(Url)
+			if err != nil {
+				return err
+			}
+
 			name := args[0]
 
 			re := regexp.MustCompile(`^[\w-]+$`)
