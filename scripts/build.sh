@@ -8,13 +8,14 @@ export CGO_ENABLED=0
 export GO111MODULE=on
 rm -rf $TARGETDIR
 mkdir -p $TARGETDIR
-for GOOS in darwin linux windows; do
-  for GOARCH in 386 amd64 arm64; do
-    export GOOS GOARCH
-    echo "building sxtctl-$GOOS-$GOARCH"
+for ARCH in "darwin-amd64" "darwin-arm64" "linux-amd64" "windows-amd64"; do
+    echo "building sxtctl-$ARCH"
+    IFS='-'; arArch=($ARCH); unset IFS;
+    export GOOS= ${arArch[0]}
+    export GOARCH ${arArch[1]}
+
     go build \
-      -o "$TARGETDIR/sxtctl-$GOOS-$GOARCH" \
+      -o "$TARGETDIR/sxtctl-$ARCH" \
       -ldflags "-w -extldflags \"-static\"" \
       $CODE
-  done
 done
