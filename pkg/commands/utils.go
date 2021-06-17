@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net/url"
 	"os"
 	"os/user"
 	"path/filepath"
 	"time"
 
-	"github.com/asaskevich/govalidator"
 	"github.com/catenasys/sxtctl/pkg/http"
 	"github.com/catenasys/sxtctl/pkg/types"
 )
@@ -57,10 +57,27 @@ func expandFilePath(path string) (string, error) {
 	return filepath.Join(usr.HomeDir, path[1:]), nil
 }
 
+func validateRemoteUrl(checkurl string) error {
+	url, err := url.Parse(checkurl)
+
+	if err != nil {
+		return fmt.Errorf("Invalid Url '%s'", url)
+	}
+
+	//Schemeless urls cause errors further down
+	if url.Scheme == "" {
+		return fmt.Errorf("Url has no scheme '%s'", url)
+	}
+
+	return nil
+}
+
 func validateCLIConfig(config *CLIConfig) error {
 	for _, remote := range config.Remotes {
-		if !govalidator.IsURL(remote.Url) {
-			return fmt.Errorf("Remote %s has an invalid Url '%s'", remote.Name, remote.Url)
+		err := validateRemoteUrl(remote.Url)
+
+		if err != nil {
+			return fmt.Errorf("Remote %s has an invalid Url (%s)", remote.Name, err)
 		}
 	}
 

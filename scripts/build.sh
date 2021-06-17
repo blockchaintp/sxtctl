@@ -12,7 +12,7 @@ for ARCH in "darwin-amd64" "darwin-arm64" "linux-amd64" "windows-amd64"; do
     echo "building sxtctl-$ARCH"
     IFS='-'; arArch=($ARCH); unset IFS;
     export GOOS= ${arArch[0]}
-    export GOARCH ${arArch[1]}
+    export GOARCH= ${arArch[1]}
 
     go build \
       -o "$TARGETDIR/sxtctl-$ARCH" \
