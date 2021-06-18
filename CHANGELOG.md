@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## Unreleased
+
+* feat: Drop the package dep, use net/url [view commit](https://github.com/catenasys/sxtctl/commit/f3a25d72ca2150e743455db64f35a7027661202c)
+* feat: Improve build by arch [view commit](https://github.com/catenasys/sxtctl/commit/cdc8e40ed9ab029b72a2029b2cbc96b00971cc75)
+* feat: Url validation using govalidate [view commit](https://github.com/catenasys/sxtctl/commit/be149ec69a27713da60ac8914b8e5b6b2b1cc4c0)
+* feat(makefile): add local build step [view commit](https://github.com/catenasys/sxtctl/commit/7848b9cb9b6798ef764854ea2902cb2cf8f6502f)
+
 ## v0.5.1
 
 * delete github workflow [view commit](https://github.com/catenasys/sxtctl/commit/6d9683eabc21f3e05a43bd78c8a47a13c4d205a2)
