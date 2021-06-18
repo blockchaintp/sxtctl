@@ -1,8 +1,12 @@
-## sxtctl
+# sxtctl
 
-CLI to manage sextant clusters via CI or your terminal.
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
+[![FOSSA Status](https://app.fossa.com/api/projects/custom%2B9585%2Fgit%40github.com%3Acatenasys%2Fsxtctl.git.svg?type=shield)](https://app.fossa.com/projects/custom%2B9585%2Fgit%40github.com%3Acatenasys%2Fsxtctl.git?ref=badge_shield)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=catenasys_sxtctl&metric=alert_status&token=970d267a29a53f6e5f14cbcbb54e65a6001e90cd)](https://sonarcloud.io/dashboard?id=catenasys_sxtctl)
 
-### install
+`sxtctl` is CLI to manage sextant clusters via CI or your terminal.
+
+## install
 
 ```bash
 
@@ -10,9 +14,9 @@ sudo curl -o /usr/local/bin/sxtctl https://github.com/catenasys/sxtctl/releases/
 sudo chmod a+x /usr/local/bin/sxtctl
 ```
 
-### usage
+## usage
 
-```bash
+```text
 sxtctl
 ======
 
@@ -36,28 +40,27 @@ Flags:
 Use "sxtctl [command] --help" for more information about a command.
 ```
 
-### configure
+## configure
 
-You can use `sxtctl` right out of the box by setting the following environment variables (useful if running in CI):
+You can use `sxtctl` right out of the box by setting the following environment
+variables (useful if running in CI):
 
- * `SEXTANT_URL` - the http(s) URL of the remote sextant API server
- * `SEXTANT_TOKEN` - the access token for the remote sextant API server
+* `SEXTANT_URL` - the http(s) URL of the remote sextant API server
+* `SEXTANT_TOKEN` - the access token for the remote sextant API server
 
-### remotes
+## remotes
 
-To help manage multiple sextant api servers - sxtctl supports `remotes` which is will remember for next time.
+To help manage multiple sextant api servers - sxtctl supports `remotes` which
+is will remember for next time.
 
-If you do not provide `--url` or `SEXTANT_URL` (plus token) variables - sextant will use the currently active remote from your saved list.
+If you do not provide `--url` or `SEXTANT_URL` (plus token) variables - sextant
+will use the currently active remote from your saved list.
 
 To view your current remotes:
 
 ```bash
 $ sxtctl remote list
-```
 
-Example output:
-
-```
 +------------+------------------+
 |    NAME    |       URL        |
 +------------+------------------+
@@ -68,32 +71,28 @@ Example output:
 To add a new remote:
 
 ```bash
-$ sxtctl remote add apples --url https://my.sextant.api.com --token XXXX
+sxtctl remote add apples --url https://my.sextant.api.com --token XXXX
 ```
 
 To remove a remote:
 
 ```bash
-$ sxtctl remote remove apples
+sxtctl remote remove apples
 ```
 
 To switch to use a different remote by default:
 
 ```bash
-$ sxtctl remote use apples
+sxtctl remote use apples
 ```
 
-### clusters
+## clusters
 
 To view a list of clusters on the current remote:
 
 ```bash
 $ sxtctl cluster list
-```
 
-Example output:
-
-```
 +----+------+--------------------------+-------------+---------------------------------+-------------+
 | ID | NAME |         CREATED          |   STATUS    |           API SERVER            | DEPLOYMENTS |
 +----+------+--------------------------+-------------+---------------------------------+-------------+
@@ -104,29 +103,28 @@ Example output:
 If you want to output the list of clusters in JSON format (useful when in CI):
 
 ```bash
-$ sxtctl cluster list -o json
+sxtctl cluster list -o json
 ```
 
-### deployments
+## deployments
 
-To view a list of deployments on a cluster, you must provide either the cluster id or name.
+To view a list of deployments on a cluster, you must provide either the cluster
+id or name.
 
-This should be assigned to the `--cluster` command line argument or `SEXTANT_CLUSTER` env variable:
+This should be assigned to the `--cluster` command line argument or
+`SEXTANT_CLUSTER` env variable:
 
-For example - in the output above - we have a cluster called `kind` with an id of `3`
+For example - in the output above - we have a cluster called `kind` with an id
+of `3`
 
 Therefore - all of the following work the same way
 
-```
+```bash
 $ sxtctl deployment list --cluster kind
 $ sxtctl deployment list --cluster 3
 $ SEXTANT_CLUSTER=kind sxtctl deployment list
 $ SEXTANT_CLUSTER=3 sxtctl deployment list
-```
 
-Example output:
-
-```
 +----+-------+--------------------------+-------------+------------------+-------------------+
 | ID | NAME  |         CREATED          |   STATUS    |  DEPLOYMENTTYPE  | DEPLOYMENTVERSION |
 +----+-------+--------------------------+-------------+------------------+-------------------+
@@ -134,35 +132,40 @@ Example output:
 +----+-------+--------------------------+-------------+------------------+-------------------+
 ```
 
-If you want to output the list of deployments in JSON format (useful when in CI):
+If you want to output the list of deployments in JSON format (useful when in
+CI):
 
 ```bash
-$ sxtctl deployment list --cluster 3 -o json
+sxtctl deployment list --cluster 3 -o json
 ```
 
-### pause & restart deployments
+## pause & restart deployments
 
-If you want to "pause" a deployment (remove all containers but keep the persistent volumes):
+If you want to "pause" a deployment (remove all containers but keep the
+persistent volumes):
 
 ```bash
-$ sxtctl deployment undeploy --cluster 3 --deployment 15
+sxtctl deployment undeploy --cluster 3 --deployment 15
 ```
 
-Then - later, if you want to reactivate a dedployment (i.e. reinstantiate all containers)
+Then - later, if you want to reactivate a dedployment (i.e. reinstantiate all
+containers)
 
 ```bash
-$ sxtctl deployment redeploy --cluster 3 --deployment 15
+sxtctl deployment redeploy --cluster 3 --deployment 15
 ```
 
-### examples
+## examples
 
-#### scale to zero nodes
+### scale to zero nodes
 
-In the following example - we configure everything via env variables (typical for a CI environment).
+In the following example - we configure everything via env variables (typical
+for a CI environment).
 
-We can then run our two functions in order to pause and re-activate a deployment.
+We can then run our two functions in order to pause and re-activate a
+deployment.
 
-```
+```bash
 export SEXTANT_URL=https://my.sextant.com
 export SEXTANT_TOKEN=XXX
 export SEXTANT_CLUSTER=cluster-name
