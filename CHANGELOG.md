@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+* docs: Update README.md [view commit](https://github.com/catenasys/sxtctl/commit/c90da5f2d05b553773ab350a5e601f602727cd13)
+* docs: update README with badges and linting SXT-725 [view commit](https://github.com/catenasys/sxtctl/commit/cb6d2467ec5fa1484ae321dd69428d32c76222ca)
+* fix(docker): correct wasn't actually building arm64 arch [view commit](https://github.com/catenasys/sxtctl/commit/38ddc55dedd1dd817b1d80c5c5076d144fbac55a)
 * feat: Drop the package dep, use net/url [view commit](https://github.com/catenasys/sxtctl/commit/f3a25d72ca2150e743455db64f35a7027661202c)
 * feat: Improve build by arch [view commit](https://github.com/catenasys/sxtctl/commit/cdc8e40ed9ab029b72a2029b2cbc96b00971cc75)
 * feat: Url validation using govalidate [view commit](https://github.com/catenasys/sxtctl/commit/be149ec69a27713da60ac8914b8e5b6b2b1cc4c0)
