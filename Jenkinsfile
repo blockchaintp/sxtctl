@@ -87,9 +87,12 @@ pipeline {
         expression { env.BRANCH_NAME == "master" }
       }
       steps {
-        sh '''
-          make clean publish
-        '''
+        withCredentials([string(credentialsId: 'btp-build-github-pat',
+                                variable: 'GITHUB_TOKEN')]) {
+          sh '''
+            make clean publish
+          '''
+        }
       }
     }
   }

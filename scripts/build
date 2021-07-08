@@ -9,7 +9,7 @@ export CGO_ENABLED=0
 export GO111MODULE=on
 rm -rf "$TARGETDIR"
 mkdir -p "$TARGETDIR"
-for ARCH in "darwin-amd64" "darwin-arm64" "linux-amd64" "windows-amd64"; do
+for ARCH in "darwin-amd64" "linux-arm64" "darwin-arm64" "linux-amd64" "windows-amd64"; do
   echo "building sxtctl-$ARCH"
   IFS='-' read -r -a arArch <<<$ARCH
   export GOOS=${arArch[0]}

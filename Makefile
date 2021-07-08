@@ -1,29 +1,29 @@
 MAKEFILE_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
 include $(MAKEFILE_DIR)/standard_defs.mk
 
-clean: clean_go
+clean: clean_build_go
 
 distclean: clean_docker
 
-build: $(MARKERS)/build_docker
+build: $(MARKERS)/build_go $(MARKERS)/build_docker
 
-analyze: analyze_fossa
+test: $(MARKERS)/test_go
 
-.PHONY: build_dev
-build_dev:
-	(cd ./cmd/sxtctl && go build .)
+analyze: analyze_go analyze_fossa
 
-$(MARKERS)/build_go: $(MARKERS)/build_toolchain_docker
-	$(TOOL) -w /project/cmd/sxtctl $(TOOLCHAIN_IMAGE) go build
-
-.PHONY: clean_go
-clean_go: $(MARKERS)/build_toolchain_docker
-	$(TOOL) $(TOOLCHAIN_IMAGE) go clean
-
-$(MARKERS)/build_docker:
-	docker build -t sxtctl:$(ISOLATION_ID) .
-	touch $@
+publish: gh-create-draft-release
+	if [ "$(RELEASABLE)" = "yes" ]; then \
+		$(GH_RELEASE) upload $(VERSION) target/* ; \
+	fi
 
 .PHONY: clean_docker
 clean_docker: clean_toolchain_docker
 	docker rmi -f sxtctl:$(ISOLATION_ID)
+
+$(MARKERS)/build_docker: $(MARKERS)/build_go
+	docker build -t sxtctl:$(ISOLATION_ID) .
+	touch $@
+
+.PHONY: analyze_dive
+analyze_dive:
+	$(DIVE_ANALYZE) sxtctl:$(ISOLATION_ID)
