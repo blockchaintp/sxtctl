@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 0.5.1-20-ga6abbfc
+## v0.5.2
 
 * docs: Update README.md [view commit](https://github.com/catenasys/sxtctl/commit/c90da5f2d05b553773ab350a5e601f602727cd13)
 * docs: update README with badges and linting SXT-725 [view commit](https://github.com/catenasys/sxtctl/commit/cb6d2467ec5fa1484ae321dd69428d32c76222ca)
