@@ -80,10 +80,13 @@ TOOLCHAIN_HOME := /home/toolchain
 TOOL_VOLS = -v toolchain-home-$(ISOLATION_ID):/home/toolchain \
 	-v $(PWD):/project
 
-TOOL = $(DOCKER_RUN_USER) -e GITHUB_TOKEN -e MAVEN_HOME=/home/toolchain/.m2 $(TOOL_VOLS) \
+TOOL_ENVIRONMENT = -e GITHUB_TOKEN -e MAVEN_HOME=/home/toolchain/.m2 \
+	-e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY -e FOSSA_API_KEY
+
+TOOL = $(DOCKER_RUN_USER) $(TOOL_ENVIRONMENT) $(TOOL_VOLS) \
 	-w $${WORKDIR:-/project}
-TOOL_DEFAULT = $(DOCKER_RUN_DEFAULT) -e GITHUB_TOKEN \
-	-e MAVEN_HOME=/home/toolchain/.m2 $(TOOL_VOLS) -w $${WORKDIR:-/project}
+TOOL_DEFAULT = $(DOCKER_RUN_DEFAULT) $(TOOL_ENVIRONMENT) $(TOOL_VOLS) \
+	-w $${WORKDIR:-/project}
 
 TOOLCHAIN := $(TOOL) \
 	$(shell if [ -n "$(MAVEN_SETTINGS)" ]; then echo -v \
@@ -100,6 +103,7 @@ DIVE_ANALYZE = $(TOOL) -v $(DOCKER_SOCK):/var/run/docker.sock \
 	--user toolchain:$(shell getent group docker|awk -F: '{print $$3}') \
 	$(TOOLCHAIN_IMAGE) dive --ci
 
+CLEAN_DIRS = build markers target
 ##
 # BEGIN Standardized directives
 ##
@@ -120,7 +124,7 @@ clean: clean_dirs
 # Clean everything and the docker image, leaving the repo pristine
 .PHONY: distclean
 distclean: clean
-	rm -rf $(MARKERS)
+	rm -rf $(CLEAN_DIRS)
 
 # All compilation tasks
 .PHONY: build
@@ -170,14 +174,14 @@ project_%:
 .PHONY: analyze_fossa
 analyze_fossa:
 	if [ -z "$(CHANGE_BRANCH)" ]; then \
-	  $(TOOL_DEFAULT) -e FOSSA_API_KEY blockchaintp/fossa:latest fossa analyze --verbose \
+	  $(TOOLCHAIN) fossa analyze --verbose \
 	    --no-ansi -b ${BRANCH_NAME}; \
-	  $(TOOL_DEFAULT) -e FOSSA_API_KEY blockchaintp/fossa:latest fossa test --verbose \
+	  $(TOOLCHAIN) fossa test --verbose \
 	    --no-ansi -b ${BRANCH_NAME}; \
 	else \
-	  $(TOOL_DEFAULT) -e FOSSA_API_KEY blockchaintp/fossa:latest fossa analyze --verbose \
+	  $(TOOLCHAIN) fossa analyze --verbose \
 	    --no-ansi -b ${CHANGE_BRANCH}; \
-	  $(TOOL_DEFAULT) -e FOSSA_API_KEY blockchaintp/fossa:latest fossa test --verbose \
+	  $(TOOLCHAIN) fossa test --verbose \
 	    --no-ansi -b ${CHANGE_BRANCH}; \
 	fi
 
@@ -190,16 +194,18 @@ analyze_go: $(MARKERS)/build_toolchain_docker
 analyze_sonar_mvn: $(MARKERS)/build_toolchain_docker
 	[ -z "$(SONAR_AUTH_TOKEN)" ] || \
 	  if [ -z "$(CHANGE_BRANCH)" ]; then \
-	    $(DOCKER_MVN) package sonar:sonar \
+	    $(DOCKER_MVN) verify sonar:sonar \
 	        -Dsonar.organization=$(ORGANIZATION) \
 	        -Dsonar.projectKey=$(ORGANIZATION)_$(REPO) \
 	        -Dsonar.projectName="$(ORGANIZATION)/$(REPO)" \
 	        -Dsonar.branch.name=$(BRANCH_NAME) \
 	        -Dsonar.projectVersion=$(VERSION) \
 	        -Dsonar.host.url=$(SONAR_HOST_URL) \
+	        -Dsonar.junit.reportPaths=target/surefire-reports,**/target/surefire-reports \
+	        -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml,**/target/site/jacoco/jacoco.xml \
 	        -Dsonar.login=$(SONAR_AUTH_TOKEN) ; \
 	  else \
-	    $(DOCKER_MVN) package sonar:sonar \
+	    $(DOCKER_MVN) verify sonar:sonar \
 	        -Dsonar.organization=$(ORGANIZATION) \
 	        -Dsonar.projectKey=$(ORGANIZATION)_$(REPO) \
 	        -Dsonar.projectName="$(ORGANIZATION)/$(REPO)" \
@@ -208,6 +214,8 @@ analyze_sonar_mvn: $(MARKERS)/build_toolchain_docker
 	        -Dsonar.pullrequest.base=$(CHANGE_TARGET) \
 	        -Dsonar.projectVersion=$(VERSION) \
 	        -Dsonar.host.url=$(SONAR_HOST_URL) \
+	        -Dsonar.junit.reportPaths=target/surefire-reports,**/target/surefire-reports \
+	        -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml,**/target/site/jacoco/jacoco.xml \
 	        -Dsonar.login=$(SONAR_AUTH_TOKEN) ; \
 	  fi
 
@@ -225,7 +233,7 @@ analyze_sonar_generic:
 	        -Dsonar.projectVersion=$(VERSION) \
 	        -Dsonar.host.url=$(SONAR_HOST_URL) \
 	        -Dsonar.login=$(SONAR_AUTH_TOKEN) \
-	        -Dsonar.junit.reportPaths=**/target/surefire-reports; \
+	        -Dsonar.junit.reportPaths=target/surefire-reports,**/target/surefire-reports; \
 	  else \
 	    $(DOCKER_RUN_USER) \
 	      -v $$(pwd):/usr/src \
@@ -239,7 +247,7 @@ analyze_sonar_generic:
 	        -Dsonar.projectVersion=$(VERSION) \
 	        -Dsonar.host.url=$(SONAR_HOST_URL) \
 	        -Dsonar.login=$(SONAR_AUTH_TOKEN) \
-	        -Dsonar.junit.reportPaths=**/target/surefire-reports; \
+	        -Dsonar.junit.reportPaths=target/surefire-reports,**/target/surefire-reports; \
 	  fi
 
 .PHONY: analyze_sonar_js
@@ -321,8 +329,7 @@ fix_permissions:
 # This will reset the build status possible causing steps to rerun
 .PHONY: clean_markers
 clean_markers:
-	rm -rf $(MARKERS)
-	rm -rf build
+	rm -rf $(CLEAN_DIRS)
 
 $(MARKERS)/build_go: $(MARKERS)/build_toolchain_docker
 	$(TOOLCHAIN) bash -c "if [ -r scripts/build ]; then scripts/build; else go build ./...; fi"
@@ -338,7 +345,7 @@ $(MARKERS)/build_mvn: $(MARKERS)/build_toolchain_docker
 	touch $@
 
 $(MARKERS)/package_mvn: $(MARKERS)/build_toolchain_docker
-	$(DOCKER_MVN) package verify
+	$(DOCKER_MVN) package
 	touch $@
 
 clean_mvn: $(MARKERS)/build_toolchain_docker
@@ -370,8 +377,7 @@ $(MARKERS):
 
 .PHONY: clean_dirs_standard
 clean_dirs_standard:
-	rm -rf build
-	rm -rf $(MARKERS)
+	rm -rf $(CLEAN_DIRS)
 
 .PHONY: clean_dirs
 clean_dirs: clean_dirs_standard
