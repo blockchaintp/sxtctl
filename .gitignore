@@ -2,3 +2,6 @@ target
 cmd/sxtctl/sxtctl
 build
 markers
+
+# MkDocs documentation
+site/
