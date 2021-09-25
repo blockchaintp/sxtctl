@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Unreleased
+
+* docs: add mkdocs setup [view commit](https://github.com/catenasys/sxtctl/commit/c0769e8b1670e041541239609946deb9a88be854)
+
 ## v0.5.2
 
 * docs: Update README.md [view commit](https://github.com/catenasys/sxtctl/commit/c90da5f2d05b553773ab350a5e601f602727cd13)
