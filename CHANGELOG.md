@@ -1,10 +1,10 @@
 # CHANGELOG
 
-## Unreleased
+## v0.5.2
 
 * docs: add mkdocs setup [view commit](https://github.com/catenasys/sxtctl/commit/c0769e8b1670e041541239609946deb9a88be854)
 
-## v0.5.2
+## 0.5.2
 
 * docs: Update README.md [view commit](https://github.com/catenasys/sxtctl/commit/c90da5f2d05b553773ab350a5e601f602727cd13)
 * docs: update README with badges and linting SXT-725 [view commit](https://github.com/catenasys/sxtctl/commit/cb6d2467ec5fa1484ae321dd69428d32c76222ca)
@@ -14,7 +14,7 @@
 * feat: Url validation using govalidate [view commit](https://github.com/catenasys/sxtctl/commit/be149ec69a27713da60ac8914b8e5b6b2b1cc4c0)
 * feat(makefile): add local build step [view commit](https://github.com/catenasys/sxtctl/commit/7848b9cb9b6798ef764854ea2902cb2cf8f6502f)
 
-## v0.5.1
+## stopBuild/v0.5.1
 
 * delete github workflow [view commit](https://github.com/catenasys/sxtctl/commit/6d9683eabc21f3e05a43bd78c8a47a13c4d205a2)
 * makefile and Jenkinsfile for build [view commit](https://github.com/catenasys/sxtctl/commit/8926131f3809b5bcc99f2db17e57bde6f2926f01)
