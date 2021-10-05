@@ -1,6 +1,8 @@
 MAKEFILE_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
 include $(MAKEFILE_DIR)/standard_defs.mk
 
+S3_BASE_URL := s3://sxtctl
+
 clean: clean_build_go
 
 distclean: clean_docker
@@ -13,7 +15,10 @@ analyze: analyze_go analyze_fossa
 
 publish: gh-create-draft-release
 	if [ "$(RELEASABLE)" = "yes" ]; then \
-		$(GH_RELEASE) upload $(VERSION) target/* ; \
+	  $(GH_RELEASE) upload $(VERSION) target/* ; \
+	  for f in $$(find target -type f -exec basename {} \;); do \
+	    $(TOOLCHAIN) aws s3 cp /project/target/$$f $(S3_BASE_URL)/$(VERSION)/$$f; \
+	  done ; \
 	fi
 
 .PHONY: clean_docker
