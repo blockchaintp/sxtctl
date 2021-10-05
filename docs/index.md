@@ -9,9 +9,17 @@
 ## Install
 
 ```bash
+# Set ARCH appropriately for your platform
+# Supported platforms:
+#   darwin-amd64
+#   linux-amd64
+#   linux-arm64
+#   windows-amd64
 
+ARCH=linux-amd64
+VERSION=0.5.3
 sudo curl -o /usr/local/bin/sxtctl \
-  https://github.com/catenasys/sxtctl/releases/latest/download/sxtctl-linux-amd64
+  https://sxtctl.s3.amazonaws.com/${VERSION}/sxtctl-${ARCH}
 sudo chmod a+x /usr/local/bin/sxtctl
 ```
 
