@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Unreleased
+
+* docs: update sxtctl urls [view commit](https://github.com/catenasys/sxtctl/commit/7623db648255f3d99b579ca10c50c6c0ee465947)
+
 ## v0.5.3
 
 * docs: update documentation [view commit](https://github.com/catenasys/sxtctl/commit/a5b273127778ab75e9f5bc70fabc6238f655a77d)
