@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Unreleased
+
+* fix(docs): add requirements.txt and pin mkdocs version [view commit](https://github.com/catenasys/sxtctl/commit/af0f4dde10d4eccc76e952211affe7459864a302)
+
 ## v0.5.4
 
 * docs: update sxtctl urls [view commit](https://github.com/catenasys/sxtctl/commit/7623db648255f3d99b579ca10c50c6c0ee465947)
